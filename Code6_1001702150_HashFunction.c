@@ -4,16 +4,6 @@
 #define HASHTABLESIZE 30
 #define MAX_INPUT_SIZE 2048
 
-typedef struct playstation_store_games
-{
-    char *name;
-    char ESRB_rating;
-    char *genre;
-    int year_of_release;
-    float current_retail_price;
-    struct playstation_store_games *next_ptr;
-}
-PLAYSTATION_STORE_GAMES;
 
 int MyHashFunction(char *key)
 {
