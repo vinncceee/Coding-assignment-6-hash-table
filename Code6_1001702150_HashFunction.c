@@ -1,3 +1,6 @@
+//Name: Vince Vennedick Banks
+//ID: 1001702150
+/* Coding Assignment 6 */
 #include <stdio.h>
 #include <string.h>
 
