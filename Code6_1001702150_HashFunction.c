@@ -1,34 +1,43 @@
-//Name: Vince Vennedick Banks
-//ID: 1001702150
-/* Coding Assignment 6 */
 #include <stdio.h>
+#include <string.h>
 
-#define HASHTABLESIZE 10
-
+#define HASHTABLESIZE 30
+#define MAX_INPUT_SIZE 2048
 
 typedef struct playstation_store_games
 {
     char *name;
+    char ESRB_rating;
     char *genre;
     int year_of_release;
-    char ESRB_rating;
     float current_retail_price;
     struct playstation_store_games *next_ptr;
 }
-POKEMON;
+PLAYSTATION_STORE_GAMES;
 
-
-int MyHashFunction(pass in value being used in hash)
+int MyHashFunction(char *key)
 {
-    perform hash method
-    return value % HASHTABLESIZE;
+    int sum = 0;
+    int length = strlen(key);
+
+    for(int i = 0; i < length; i++)
+    {
+        sum += key[i];
+    }
+
+    return sum % HASHTABLESIZE;
 }
 
 int main(void)
 {
-    char HashValue[20];
-    printf("Enter value ");
-    scanf("%s ", HashValue);
-    printf("The hash value for %s is %d\n”, HashValue, MyHashFunction(HashValue));
+    char HashValue[MAX_INPUT_SIZE];
+    printf("Enter value: ");
+    fgets(HashValue, sizeof(HashValue), stdin);
+    char *newline = strchr(HashValue, '\n');
+    if (newline) 
+    {
+        *newline = '\0';
+    }
+    printf("The hash value for %s is %d\n", HashValue, MyHashFunction(HashValue));
     return 0;
 }
