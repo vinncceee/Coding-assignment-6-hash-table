@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <time.h>
  
-#define HASHTABLESIZE 37
+#define HASHTABLESIZE 30
  
 typedef struct playstation_store_games
 {
@@ -83,67 +83,75 @@ void FreeDynamicMemory(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 
 int DeleteNode(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 {
-	char LookupName[100] = {};
-	int result = 0;
-	
-	printf("Enter the name of the game to delete from the PS4 Store Index ");
-	scanf("%99s", LookupName); // Adding 99 to prevent buffer overflow
+    char LookupName[100] = {};
+    int result = 0;
 
-	int HashIndex = CalculateHashIndex(LookupName);
+    // Clear the input buffer
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 
-	/* Get linked list at key in array */
-	PLAYSTATION_STORE_GAMES *TempPtr = ps4_store_index[HashIndex];
-	PLAYSTATION_STORE_GAMES *PrevPtr = NULL;
- 
-	/* This array index does not have a linked list; therefore, no keys */
-	if (TempPtr == NULL) 
-	{
-		printf("\n\nGame %s does not exist in the PS4 Store Index\n\n", LookupName);
-		result = 0;
-	}
-	else 
-	{
-		while (TempPtr != NULL) 
-		{
-			if (strcmp(TempPtr->name, LookupName) == 0)
-			{
-				/* If the node being deleted is the head node */
-				if (TempPtr == ps4_store_index[HashIndex])
-				{
-					/* The node the head was pointing at is now the head */
-					ps4_store_index[HashIndex] = TempPtr->next_ptr;
-					printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
-					free(TempPtr->name);
-					free(TempPtr->genre);
-					free(TempPtr);
-					TempPtr = NULL;
-				}
-				/* Found node to be deleted - node is not the head */
-				else
-				{
-					PrevPtr->next_ptr = TempPtr->next_ptr;
-					printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
-					free(TempPtr->name);
-					free(TempPtr->genre);
-					free(TempPtr);
-					TempPtr = NULL;
-				}
-				result = 1;
-			}
-			/* this is not the node that needs to be deleted but save */
-			/* its info and move to the next node in the linked list  */
-			else
-			{
-				PrevPtr = TempPtr;
-				TempPtr = TempPtr->next_ptr;
-			}
-		}
-		if (result == 0)
-		{
-			printf("\n\nGame %s does not exist in the PS4 Store Index\n\n", LookupName);
-		}
-	}
-	return result;
+    printf("Enter the name of the game to delete from the PS4 Store Index: ");
+    fgets(LookupName, sizeof(LookupName), stdin);
+
+    // Remove the newline character if present
+    if (LookupName[strlen(LookupName) - 1] == '\n')
+        LookupName[strlen(LookupName) - 1] = '\0';
+
+    int HashIndex = CalculateHashIndex(LookupName);
+
+    /* Get linked list at key in array */
+    PLAYSTATION_STORE_GAMES *TempPtr = ps4_store_index[HashIndex];
+    PLAYSTATION_STORE_GAMES *PrevPtr = NULL;
+
+    /* This array index does not have a linked list; therefore, no keys */
+    if (TempPtr == NULL) 
+    {
+        printf("\n\nGame %s does not exist in the PS4 Store Index\n\n", LookupName);
+        result = 0;
+    }
+    else 
+    {
+        while (TempPtr != NULL) 
+        {
+            if (strcmp(TempPtr->name, LookupName) == 0)
+            {
+                /* If the node being deleted is the head node */
+                if (TempPtr == ps4_store_index[HashIndex])
+                {
+                    /* The node the head was pointing at is now the head */
+                    ps4_store_index[HashIndex] = TempPtr->next_ptr;
+                    printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
+                    free(TempPtr->name);
+                    free(TempPtr->genre);
+                    free(TempPtr);
+                    TempPtr = NULL;
+                }
+                /* Found node to be deleted - node is not the head */
+                else
+                {
+                    PrevPtr->next_ptr = TempPtr->next_ptr;
+                    printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
+                    free(TempPtr->name);
+                    free(TempPtr->genre);
+                    free(TempPtr);
+                    TempPtr = NULL;
+                }
+                result = 1;
+            }
+            /* this is not the node that needs to be deleted but save */
+            /* its info and move to the next node in the linked list  */
+            else
+            {
+                PrevPtr = TempPtr;
+                TempPtr = TempPtr->next_ptr;
+            }
+        }
+        if (result == 0)
+        {
+            printf("\n\nGame %s does not exist in the PS4 Store Index\n\n", LookupName);
+        }
+    }
+    return result;
 }
 
 
@@ -204,9 +212,15 @@ void ShowByName(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 	char LookupName[100] = {};
 	int FoundIt = 0;
 	
-	printf("\n\nEnter game's name ");
-	scanf("%s", LookupName);
-	
+	printf("\n\nEnter game's name: ");
+
+	// Clear the newline left in the input buffer by the previous input
+	while(getchar() != '\n');
+
+	fgets(LookupName, sizeof(LookupName), stdin);
+	// Remove the newline character introduced by fgets
+	LookupName[strlen(LookupName)-1] = '\0';
+
 	#if TIMING
 	clock_t start, end;
 	start = clock();
@@ -246,39 +260,49 @@ void ShowByName(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 
 void AddNewGame(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 {
-	int HashIndex = 0;
-	PLAYSTATION_STORE_GAMES *NewNode;
-	char TempBuffer[100] = {};
+    int HashIndex = 0;
+    PLAYSTATION_STORE_GAMES *NewNode;
+    char TempBuffer[100] = {};
 
-	NewNode = malloc(sizeof(PLAYSTATION_STORE_GAMES));
-	NewNode->next_ptr = NULL;
+    NewNode = malloc(sizeof(PLAYSTATION_STORE_GAMES));
+    NewNode->next_ptr = NULL;
 
-	printf("\n\nEnter new game's name ");
-	scanf("%s", TempBuffer);
-	NewNode->name = malloc(strlen(TempBuffer)*sizeof(char)+1);
-	strcpy(NewNode->name, TempBuffer);
+    // Clear the input buffer
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 
-	printf("\n\nEnter %s's ESRB Rating (E/M/T/...) ", NewNode->name);
-	scanf(" %c", &(NewNode->ESRB_rating));
-	NewNode->ESRB_rating = toupper(NewNode->ESRB_rating);
-	
-	// Extra fgets to clear stdin
-	fgets(TempBuffer, sizeof(TempBuffer)-1, stdin);
+    printf("\n\nEnter new game's name ");
+    fgets(TempBuffer, sizeof(TempBuffer), stdin); 
+    if (TempBuffer[strlen(TempBuffer) - 1] == '\n')
+        TempBuffer[strlen(TempBuffer) - 1] = '\0'; // Remove the newline character
+    NewNode->name = malloc(strlen(TempBuffer)*sizeof(char)+1);
+    strcpy(NewNode->name, TempBuffer);
 
-	printf("\n\nEnter %s's genre ", NewNode->name);
-	fgets(TempBuffer, sizeof(TempBuffer)-1, stdin); 
-	TempBuffer[strlen(TempBuffer)-1] = '\0';
-	NewNode->genre = malloc(strlen(TempBuffer)*sizeof(char)+1);
-	strcpy(NewNode->genre, TempBuffer);
+    printf("\n\nEnter %s's ESRB Rating (E/M/T/...) ", NewNode->name);
+    scanf(" %c", &(NewNode->ESRB_rating));
+    NewNode->ESRB_rating = toupper(NewNode->ESRB_rating);
+    
+    // Extra fgets to clear stdin
+    fgets(TempBuffer, sizeof(TempBuffer), stdin);
 
-	printf("\n\nEnter %s's year of release ", NewNode->name);
-	scanf("%d", &(NewNode->year_of_release));
+    printf("\n\nEnter %s's genre ", NewNode->name);
+    fgets(TempBuffer, sizeof(TempBuffer), stdin); 
+    if (TempBuffer[strlen(TempBuffer) - 1] == '\n')
+        TempBuffer[strlen(TempBuffer) - 1] = '\0'; // Remove the newline character
+    NewNode->genre = malloc(strlen(TempBuffer)*sizeof(char)+1);
+    strcpy(NewNode->genre, TempBuffer);
 
-	printf("\n\nEnter %s's current retail price ", NewNode->name);
-	scanf("%f", &(NewNode->current_retail_price));
+    printf("\n\nEnter %s's year of release ", NewNode->name);
+    scanf("%d", &(NewNode->year_of_release));
 
-	AddNode(NewNode, ps4_store_index);  // Assuming the function AddNode is adapted too.
-}   
+    // Clear stdin before next input
+    fgets(TempBuffer, sizeof(TempBuffer), stdin);
+
+    printf("\n\nEnter %s's current retail price ", NewNode->name);
+    scanf("%f", &(NewNode->current_retail_price));
+
+    AddNode(NewNode, ps4_store_index);  // Assuming the function AddNode is adapted too.
+}
 
 int ReadFileIntoHashTable(int argc, char *argv[], PLAYSTATION_STORE_GAMES *ps4_store_index[])
 {
