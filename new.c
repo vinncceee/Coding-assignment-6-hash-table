@@ -1,5 +1,6 @@
-// Coding Assignment 6 - Donna French - 100074079
-
+//Name: Vince Vennedick Banks
+//ID: 1001702150
+/* Coding Assignment 6 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,14 +87,12 @@ int DeleteNode(PLAYSTATION_STORE_GAMES *ps4_store_index[])
     char LookupName[100] = {};
     int result = 0;
 
-    // Clear the input buffer
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 
     printf("Enter the name of the game to delete from the PS4 Store Index: ");
     fgets(LookupName, sizeof(LookupName), stdin);
 
-    // Remove the newline character if present
     if (LookupName[strlen(LookupName) - 1] == '\n')
         LookupName[strlen(LookupName) - 1] = '\0';
 
@@ -120,7 +119,7 @@ int DeleteNode(PLAYSTATION_STORE_GAMES *ps4_store_index[])
                 {
                     /* The node the head was pointing at is now the head */
                     ps4_store_index[HashIndex] = TempPtr->next_ptr;
-                    printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
+                    printf("\nThe Game %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
                     free(TempPtr->name);
                     free(TempPtr->genre);
                     free(TempPtr);
@@ -130,7 +129,7 @@ int DeleteNode(PLAYSTATION_STORE_GAMES *ps4_store_index[])
                 else
                 {
                     PrevPtr->next_ptr = TempPtr->next_ptr;
-                    printf("\nGame %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
+                    printf("\nThe Game %s has been deleted from the PS4 Store Index\n\n", TempPtr->name);
                     free(TempPtr->name);
                     free(TempPtr->genre);
                     free(TempPtr);
@@ -214,11 +213,9 @@ void ShowByName(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 	
 	printf("\n\nEnter game's name: ");
 
-	// Clear the newline left in the input buffer by the previous input
 	while(getchar() != '\n');
 
 	fgets(LookupName, sizeof(LookupName), stdin);
-	// Remove the newline character introduced by fgets
 	LookupName[strlen(LookupName)-1] = '\0';
 
 	#if TIMING
@@ -242,12 +239,11 @@ void ShowByName(PLAYSTATION_STORE_GAMES *ps4_store_index[])
 					#endif
 
 					FoundIt = 1;
-					printf("\n\n%s\n", TempPtr->name);
-					
-					printf("ESRB Rating\t%c\n", TempPtr->ESRB_rating);
-					printf("Genre\t\t%s\n", TempPtr->genre);
-					printf("Year of Release\t%d\n", TempPtr->year_of_release);
-					printf("Retail Price\t%.2f\n", TempPtr->current_retail_price);
+					printf("Game:\t\t%s\n", TempPtr->name);
+					printf("ESRB Rating:\t%c\n", TempPtr->ESRB_rating);
+					printf("Genre:\t\t%s\n", TempPtr->genre);
+					printf("Year of Release:\t%d\n", TempPtr->year_of_release);
+					printf("Retail Price:\t%.2f\n", TempPtr->current_retail_price);
 				}
 				TempPtr = TempPtr->next_ptr;
 			}
@@ -267,14 +263,13 @@ void AddNewGame(PLAYSTATION_STORE_GAMES *ps4_store_index[])
     NewNode = malloc(sizeof(PLAYSTATION_STORE_GAMES));
     NewNode->next_ptr = NULL;
 
-    // Clear the input buffer
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 
     printf("\n\nEnter new game's name ");
     fgets(TempBuffer, sizeof(TempBuffer), stdin); 
     if (TempBuffer[strlen(TempBuffer) - 1] == '\n')
-        TempBuffer[strlen(TempBuffer) - 1] = '\0'; // Remove the newline character
+        TempBuffer[strlen(TempBuffer) - 1] = '\0'; 
     NewNode->name = malloc(strlen(TempBuffer)*sizeof(char)+1);
     strcpy(NewNode->name, TempBuffer);
 
@@ -282,26 +277,25 @@ void AddNewGame(PLAYSTATION_STORE_GAMES *ps4_store_index[])
     scanf(" %c", &(NewNode->ESRB_rating));
     NewNode->ESRB_rating = toupper(NewNode->ESRB_rating);
     
-    // Extra fgets to clear stdin
+
     fgets(TempBuffer, sizeof(TempBuffer), stdin);
 
     printf("\n\nEnter %s's genre ", NewNode->name);
     fgets(TempBuffer, sizeof(TempBuffer), stdin); 
     if (TempBuffer[strlen(TempBuffer) - 1] == '\n')
-        TempBuffer[strlen(TempBuffer) - 1] = '\0'; // Remove the newline character
+        TempBuffer[strlen(TempBuffer) - 1] = '\0';
     NewNode->genre = malloc(strlen(TempBuffer)*sizeof(char)+1);
     strcpy(NewNode->genre, TempBuffer);
 
     printf("\n\nEnter %s's year of release ", NewNode->name);
     scanf("%d", &(NewNode->year_of_release));
 
-    // Clear stdin before next input
     fgets(TempBuffer, sizeof(TempBuffer), stdin);
 
     printf("\n\nEnter %s's current retail price ", NewNode->name);
     scanf("%f", &(NewNode->current_retail_price));
 
-    AddNode(NewNode, ps4_store_index);  // Assuming the function AddNode is adapted too.
+    AddNode(NewNode, ps4_store_index);  
 }
 
 int ReadFileIntoHashTable(int argc, char *argv[], PLAYSTATION_STORE_GAMES *ps4_store_index[])
@@ -330,28 +324,22 @@ int ReadFileIntoHashTable(int argc, char *argv[], PLAYSTATION_STORE_GAMES *ps4_s
 				exit(0);
 			}
 			NewNode->next_ptr = NULL;
-
-			// Name
+			
 			token = strtok(FileLine, "|");
 			NewNode->name = strdup(token);
 
-			// ESRB rating
 			token = strtok(NULL, "|");
 			NewNode->ESRB_rating = *token;
 
-			// Genre
 			token = strtok(NULL, "|");
 			NewNode->genre = strdup(token);
-
-			// Year
+		
 			token = strtok(NULL, "|");
 			NewNode->year_of_release = atoi(token);
 
-			// Price
 			token = strtok(NULL, "|");
 			NewNode->current_retail_price = atof(token);
 
-			// Add to hash table
 			AddNode(NewNode, ps4_store_index);
 			counter++;
 		}
